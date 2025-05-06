@@ -1,0 +1,5 @@
+[
+    { "label": "HohoHub", "repo": "hohoscripting/HohoHub", "file": "main.lua" },
+    { "label": "RedHub", "repo": "redhubx/roblox", "file": "bloxfruits.lua" },
+    { "label": "ZenScript", "repo": "zensploit/blox", "file": "zen.lua" }
+]
