@@ -1,24 +1,48 @@
-local TweenService = game:GetService("TweenService")
+-- 🔥 ArchivistX_SWIFT with Volcanic UI Theme
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
-local player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
--- ScreenGui
-local screenGui = Instance.new("ScreenGui", CoreGui)
-screenGui.Name = "ArchivistX_LavaFusion"
-screenGui.ResetOnSpawn = false
+local localPlayer = Players.LocalPlayer
 
--- Main Frame (Container)
-local container = Instance.new("Frame", screenGui)
+local gui = Instance.new("ScreenGui", CoreGui)
+gui.Name = "ArchivistX_LavaFusion"
+gui.ResetOnSpawn = false
+
+-- 🔲 Container with lava theme
+local container = Instance.new("Frame", gui)
 container.Size = UDim2.new(0, 300, 0, 400)
 container.Position = UDim2.new(0, 20, 0.5, -200)
-container.BackgroundColor3 = Color3.fromRGB(25, 10, 10)
+container.BackgroundColor3 = Color3.fromRGB(20, 10, 10)
 container.BorderSizePixel = 0
 container.Active = true
 container.Draggable = true
 container.ClipsDescendants = true
 
--- Effect: Haze
+-- 💧 Dripping Lava Effect
+local function createDrip()
+	local drip = Instance.new("Frame", container)
+	drip.Size = UDim2.new(0, math.random(3, 6), 0, math.random(10, 25))
+	drip.Position = UDim2.new(math.random(), 0, 0, -10)
+	drip.BackgroundColor3 = Color3.fromRGB(255, 60, 0)
+	drip.BorderSizePixel = 0
+	drip.ZIndex = 3
+	local tween = TweenService:Create(drip, TweenInfo.new(1), {
+		Position = UDim2.new(drip.Position.X.Scale, 0, 1, 10),
+		BackgroundTransparency = 1
+	})
+	tween:Play()
+	tween.Completed:Connect(function() drip:Destroy() end)
+end
+
+task.spawn(function()
+	while true do
+		createDrip()
+		wait(0.2)
+	end
+end)
+
+-- 🔥 Ambient Lava Glow
 local haze = Instance.new("Frame", container)
 haze.Size = UDim2.new(1, 0, 1, 0)
 haze.BackgroundColor3 = Color3.fromRGB(255, 100, 50)
@@ -35,177 +59,41 @@ task.spawn(function()
 	end
 end)
 
--- Label: AMA_ZERO
-local amaLabel = Instance.new("TextLabel", container)
-amaLabel.Size = UDim2.new(0, 200, 0, 50)
-amaLabel.Position = UDim2.new(0.5, -100, 0, -5)
-amaLabel.BackgroundTransparency = 1
-amaLabel.Text = "AMA_ZERO"
-amaLabel.TextScaled = true
-amaLabel.Font = Enum.Font.GothamBold
-amaLabel.TextColor3 = Color3.new(0, 0, 1)
-amaLabel.TextStrokeTransparency = 0
-amaLabel.TextTransparency = 1
-amaLabel.ZIndex = 5
-
-local gradient = Instance.new("UIGradient", amaLabel)
-gradient.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 10, 80)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 0, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 10, 80))
-}
-
--- Effects Toggle State
-local visualEffectsEnabled = true
-local crackFolder = Instance.new("Folder", container)
-crackFolder.Name = "CrackFolder"
-local pulseCount = 0
-local maxCracks = 5
-local pulseCracks = {}
--- === GLOWING CRACK BUILDUP SYSTEM ===
-local function spawnPersistentCrack()
-	if pulseCount >= maxCracks or not visualEffectsEnabled then return end
-
-	local crack = Instance.new("Frame", crackFolder)
-	crack.Size = UDim2.new(0, math.random(40, 80), 0, math.random(2, 4))
-	crack.Position = UDim2.new(math.random(), -40, math.random(), 0)
-	crack.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-	crack.BackgroundTransparency = 0.2
-	crack.BorderSizePixel = 0
-	crack.Rotation = math.random(-25, 25)
-	crack.ZIndex = 2
-
-	table.insert(pulseCracks, crack)
-	pulseCount += 1
-end
-
--- Crack buildup loop (One-time setup, then infinite shimmer)
-task.spawn(function()
-	while pulseCount < maxCracks do
-		wait(1.5)
-		if visualEffectsEnabled then spawnPersistentCrack() end
-	end
-
-	-- Begin glowing effect once 5 cracks are present
-	for _, crack in ipairs(pulseCracks) do
-		task.spawn(function()
-			while true do
-				if not visualEffectsEnabled then crack.Visible = false wait(1) continue end
-				crack.Visible = true
-				local flicker = Color3.fromRGB(255, math.random(40, 80), 0)
-				TweenService:Create(crack, TweenInfo.new(0.4), {
-					BackgroundColor3 = flicker,
-					BackgroundTransparency = 0.1 + math.random() * 0.3
-				}):Play()
-				wait(0.6)
-			end
-		end)
-	end
-end)
-
-
--- Function: Create Dripping Lava
-local function createDrip()
-@@ -285,96 +326,130 @@
-
-	if minimized then
-		container:TweenSize(UDim2.new(0, 80, 0, 40), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-
-		-- Fade & destroy existing cracks
-		for _, crack in ipairs(pulseCracks) do
-			if crack and crack:IsA("Frame") then
-				TweenService:Create(crack, TweenInfo.new(0.5), {
-					BackgroundTransparency = 1
-				}):Play()
-				game.Debris:AddItem(crack, 0.6)
-			end
-		end
-		table.clear(pulseCracks)
-		pulseCount = 0
-	else
-		container:TweenSize(UDim2.new(0, 300, 0, 400), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
-
-		-- Restart crack buildup loop
-		task.spawn(function()
-			while pulseCount < maxCracks do
-				wait(1.5)
-				if visualEffectsEnabled then spawnPersistentCrack() end
-			end
-
-			-- Glow again
-			for _, crack in ipairs(pulseCracks) do
-				task.spawn(function()
-					while visualEffectsEnabled do
-						local flicker = Color3.fromRGB(255, math.random(40, 80), 0)
-						TweenService:Create(crack, TweenInfo.new(0.4), {
-							BackgroundColor3 = flicker,
-							BackgroundTransparency = 0.1 + math.random() * 0.3
-						}):Play()
-						wait(0.6)
-					end
-				end)
-			end
-		end)
-	end
-end)
-
--- Button Loader UI (ArchivistX_SWIFT)
+-- 🔘 Title
 local title = Instance.new("TextLabel", container)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Position = UDim2.new(0, 0, 0, 30)
-title.Text = "Ama_Zero's — SWIFT Loader"
+title.Text = "Archivist X — SWIFT Loader"
 title.BackgroundTransparency = 1
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
 title.ZIndex = 5
 
-local list = Instance.new("ScrollingFrame", container)
-list.Size = UDim2.new(1, 0, 1, -60)
-list.Position = UDim2.new(0, 0, 0, 60)
-list.CanvasSize = UDim2.new(0, 0, 0, 0)
-list.ScrollBarThickness = 6
-list.BackgroundTransparency = 1
-list.ZIndex = 5
+-- 📜 Script Button Panel
+local List = Instance.new("ScrollingFrame", container)
+List.Size = UDim2.new(1, 0, 1, -30)
+List.Position = UDim2.new(0, 0, 0, 30)
+List.CanvasSize = UDim2.new(0, 0, 0, 0)
+List.ScrollBarThickness = 6
+List.BackgroundTransparency = 1
+List.ZIndex = 5
 
-local layout = Instance.new("UIListLayout", list)
-layout.Padding = UDim.new(0, 4)
-layout.SortOrder = Enum.SortOrder.LayoutOrder
+local Layout = Instance.new("UIListLayout", List)
+Layout.Padding = UDim.new(0, 4)
+Layout.SortOrder = Enum.SortOrder.LayoutOrder
 
-list.ChildAdded:Connect(function()
+List.ChildAdded:Connect(function()
 	task.wait()
-	list.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
+	List.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
 end)
 
--- Utility: Create Script Button
+-- 📎 Script Button Generator
 local function createScriptButton(name, scriptUrl, optionalParam)
-	local button = Instance.new("TextButton", list)
+	local button = Instance.new("TextButton", List)
 	button.Size = UDim2.new(1, -10, 0, 30)
 	button.Position = UDim2.new(0, 5, 0, 0)
-button.BackgroundTransparency = 1
-local bg = Instance.new("Frame", button)
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.Position = UDim2.new(0, 0, 0, 0)
-bg.BackgroundTransparency = 0
-bg.BorderSizePixel = 0
-bg.ZIndex = button.ZIndex - 1
-
-local grad = Instance.new("UIGradient", bg)
-grad.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 60, 0)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 140, 0)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 60, 0))
-}
-grad.Rotation = math.random(0, 360)
-
--- Animate gradient rotation
-task.spawn(function()
-	while true do
-		grad.Rotation = (grad.Rotation + 1) % 360
-		wait(0.05)
-	end
-end)
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.BackgroundColor3 = Color3.fromRGB(40, 20, 20)
+	button.TextColor3 = Color3.new(1, 1, 1)
 	button.Font = Enum.Font.Gotham
 	button.TextSize = 14
 	button.Text = name
@@ -232,8 +120,60 @@ end)
 	end)
 end
 
--- Define Script Buttons
+-- 🧨 Eruption Burst
+local function eruption()
+	local burst = Instance.new("Frame", container)
+	burst.Size = UDim2.new(0, math.random(50, 120), 0, math.random(20, 60))
+	burst.Position = UDim2.new(math.random(), 0, math.random(), 0)
+	burst.AnchorPoint = Vector2.new(0.5, 0.5)
+	burst.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+	burst.BorderSizePixel = 0
+	burst.BackgroundTransparency = 0.2
+	burst.Rotation = math.random(-15, 15)
+	burst.ZIndex = 4
+	TweenService:Create(burst, TweenInfo.new(0.5), {
+		Size = burst.Size + UDim2.new(0, 40, 0, 20),
+		BackgroundTransparency = 1
+	}):Play()
+	game.Debris:AddItem(burst, 0.6)
+end
+
+task.spawn(function()
+	while true do
+		wait(math.random(2, 5))
+		eruption()
+	end
+end)
+
+-- ➕ Script Buttons
 createScriptButton("Redhub", "https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau", _G.Settings or {})
 createScriptButton("Hohohub", "https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI")
 createScriptButton("Zenith Hub", "https://raw.githubusercontent.com/Efe0626/ZenithHub/refs/heads/main/Loader")
 
+-- ⏬ Minimize Toggle
+local minimized = false
+local button = Instance.new("TextButton", container)
+button.Size = UDim2.new(0, 40, 0, 20)
+button.Position = UDim2.new(1, -45, 0, 5)
+button.Text = "-"
+button.TextSize = 18
+button.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
+button.TextColor3 = Color3.new(1, 1, 1)
+button.BorderSizePixel = 0
+button.ZIndex = 6
+
+button.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	if minimized then
+		container:TweenSize(UDim2.new(0, 80, 0, 40), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+		haze.Visible = false
+		List.Visible = false
+		title.Visible = false
+	else
+		container:TweenSize(UDim2.new(0, 300, 0, 400), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+		wait(0.5)
+		haze.Visible = true
+		List.Visible = true
+		title.Visible = true
+	end
+end)
