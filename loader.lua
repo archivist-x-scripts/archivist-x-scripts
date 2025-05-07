@@ -80,7 +80,7 @@ List.ZIndex = 5
 -- 🔣 Hieroglyph display label
 local glyphLabel = Instance.new("TextLabel", container)
 glyphLabel.Size = UDim2.new(1, 0, 0, 40)
-glyphLabel.Position = UDim2.new(0, 0, 0, -10)
+glyphLabel.Position = UDim2.new(0, 0, 0, 5)
 glyphLabel.BackgroundTransparency = 1
 glyphLabel.TextColor3 = Color3.fromRGB(255, 80, 10)
 glyphLabel.Font = Enum.Font.Code
@@ -88,8 +88,38 @@ glyphLabel.TextSize = 28
 glyphLabel.ZIndex = 10
 glyphLabel.TextStrokeTransparency = 0.3
 glyphLabel.TextStrokeColor3 = Color3.fromRGB(255, 30, 10)
-glyphLabel.TextTransparency = 1
+glyphLabel.TextTransparency = 0
 glyphLabel.Text = "𐌰𐌼𐌀_𐌶𐌴𐍂𐍉"
+task.spawn(function()
+	while true do
+		wait(5)
+
+		-- Optional: Change glyph text each cycle
+		local glyphs = {"𐌰𐌼𐌀", "𐌶𐌴𐍂𐍉", "𐍀𐍉𐌲𐌰", "𐌷𐌰𐌼𐌰", "𐌴𐌽𐌳"}
+		glyphLabel.Text = glyphs[math.random(1, #glyphs)]
+
+		-- Flash in
+		local flashIn = TweenService:Create(glyphLabel, TweenInfo.new(0.2), {
+			TextTransparency = 0,
+			TextSize = 36
+		})
+		flashIn:Play()
+		flashIn.Completed:Wait()
+
+		-- Shake and pulse
+		task.spawn(function() shakeFrame(container, 0.4, 2) end)
+		task.spawn(function() shakeFrame(glyphLabel, 0.4, 1) end)
+
+		wait(0.3)
+
+		-- Flash out
+		local flashOut = TweenService:Create(glyphLabel, TweenInfo.new(0.2), {
+			TextTransparency = 1,
+			TextSize = 28
+		})
+		flashOut:Play()
+	end
+end)
 
 local Layout = Instance.new("UIListLayout", List)
 Layout.Padding = UDim.new(0, 4)
