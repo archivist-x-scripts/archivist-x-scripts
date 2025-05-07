@@ -5,7 +5,7 @@ local player = Players.LocalPlayer
 
 -- ScreenGui
 local screenGui = Instance.new("ScreenGui", CoreGui)
-screenGui.Name = "ArchivistX_LavaFusion"
+screenGui.Name = "Ama_Zero KING"
 screenGui.ResetOnSpawn = false
 
 -- Main Frame (Container)
@@ -365,7 +365,7 @@ button.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Button Loader UI (ArchivistX_SWIFT)
+-- Button Loader UI 
 local title = Instance.new("TextLabel", container)
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 30)
