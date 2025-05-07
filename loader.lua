@@ -77,6 +77,19 @@ List.CanvasSize = UDim2.new(0, 0, 0, 0)
 List.ScrollBarThickness = 6
 List.BackgroundTransparency = 1
 List.ZIndex = 5
+-- 🔣 Hieroglyph display label
+local glyphLabel = Instance.new("TextLabel", container)
+glyphLabel.Size = UDim2.new(1, 0, 0, 40)
+glyphLabel.Position = UDim2.new(0, 0, 0, -10)
+glyphLabel.BackgroundTransparency = 1
+glyphLabel.TextColor3 = Color3.fromRGB(255, 80, 10)
+glyphLabel.Font = Enum.Font.Code
+glyphLabel.TextSize = 28
+glyphLabel.ZIndex = 10
+glyphLabel.TextStrokeTransparency = 0.3
+glyphLabel.TextStrokeColor3 = Color3.fromRGB(255, 30, 10)
+glyphLabel.TextTransparency = 1
+glyphLabel.Text = "𐌰𐌼𐌀_𐌶𐌴𐍂𐍉"
 
 local Layout = Instance.new("UIListLayout", List)
 Layout.Padding = UDim.new(0, 4)
@@ -142,6 +155,41 @@ task.spawn(function()
 	while true do
 		wait(math.random(2, 5))
 		eruption()
+	end
+end)
+-- 🌀 Shake utility
+local function shakeFrame(frame, duration, intensity)
+	local originalPos = frame.Position
+	local t = 0
+	while t < duration do
+		local offsetX = math.random(-intensity, intensity)
+		local offsetY = math.random(-intensity, intensity)
+		frame.Position = originalPos + UDim2.new(0, offsetX, 0, offsetY)
+		task.wait(0.03)
+		t = t + 0.03
+	end
+	frame.Position = originalPos
+end
+
+-- 🔁 Every 5 seconds, trigger flash + shake
+task.spawn(function()
+	while true do
+		wait(5)
+
+		local flashIn = TweenService:Create(glyphLabel, TweenInfo.new(0.25), {
+			TextTransparency = 0
+		})
+		flashIn:Play()
+		flashIn.Completed:Wait()
+
+		task.spawn(function() shakeFrame(container, 0.4, 2) end)
+		task.spawn(function() shakeFrame(glyphLabel, 0.4, 1) end)
+
+		wait(0.4)
+		local flashOut = TweenService:Create(glyphLabel, TweenInfo.new(0.25), {
+			TextTransparency = 1
+		})
+		flashOut:Play()
 	end
 end)
 
