@@ -60,7 +60,8 @@ local visualEffectsEnabled = true
 local crackFolder = Instance.new("Folder", container)
 crackFolder.Name = "CrackFolder"
 local pulseCount = 0
-local maxCracks = 10
+local maxCracks = 5
+local pulseCracks = {}
 
 -- Function: Create Dripping Lava
 local function createDrip()
@@ -172,8 +173,43 @@ task.spawn(function()
 	while true do
 		wait(1)
 		if visualEffectsEnabled then
-			createCrack()
+			local function spawnPersistentCrack()
+	if pulseCrackCount >= maxPulseCracks or not visualEffectsEnabled then return end
+
+	local crack = Instance.new("Frame", crackFolder)
+	crack.Size = UDim2.new(0, math.random(40, 80), 0, math.random(2, 4))
+	crack.Position = UDim2.new(math.random(), -40, math.random(), 0)
+	crack.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+	crack.BackgroundTransparency = 0.2
+	crack.BorderSizePixel = 0
+	crack.Rotation = math.random(-25, 25)
+	crack.ZIndex = 2
+
+	table.insert(pulseCracks, crack)
+	pulseCrackCount += 1
+end
+
+-- Crack buildup loop
+task.spawn(function()
+	while pulseCrackCount < maxPulseCracks do
+		wait(2)
+		if visualEffectsEnabled then
+			spawnPersistentCrack()
 		end
+	end
+
+	-- Once full, glow all
+	for _, crack in ipairs(pulseCracks) do
+		task.spawn(function()
+			while visualEffectsEnabled do
+				local flicker = Color3.fromRGB(255, math.random(40, 80), 0)
+				TweenService:Create(crack, TweenInfo.new(0.4), {
+					BackgroundColor3 = flicker,
+					BackgroundTransparency = 0.1 + math.random() * 0.3
+				}):Play()
+				wait(0.6)
+			end
+		end)
 	end
 end)
 
@@ -258,7 +294,7 @@ end)
 local title = Instance.new("TextLabel", container)
 title.Size = UDim2.new(1, 0, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 30)
-title.Text = "Archivist X — SWIFT Loader"
+title.Text = "Ama_Zero's — SWIFT Loader"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
