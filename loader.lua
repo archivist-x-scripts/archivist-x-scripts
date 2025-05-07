@@ -1,16 +1,18 @@
--- 🔥 AmazeroX_SWIFT with Volcanic UI Theme
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
 
 local localPlayer = Players.LocalPlayer
 
-local gui = Instance.new("ScreenGui", CoreGui)
-gui.Name = "AmazeroX_LavaFusion"
+-- 🔥 ScreenGui Initialization
+local gui = Instance.new("ScreenGui")
+gui.Name = "Amazero_LavaFusion"
 gui.ResetOnSpawn = false
+gui.Parent = CoreGui
 
--- 🔲 Container with lava theme
-local container = Instance.new("Frame", gui)
+-- 🔲 Lava-Themed Container
+local container = Instance.new("Frame")
 container.Size = UDim2.new(0, 300, 0, 400)
 container.Position = UDim2.new(0, 20, 0.5, -200)
 container.BackgroundColor3 = Color3.fromRGB(20, 10, 10)
@@ -18,15 +20,18 @@ container.BorderSizePixel = 0
 container.Active = true
 container.Draggable = true
 container.ClipsDescendants = true
+container.Parent = gui
 
 -- 💧 Dripping Lava Effect
 local function createDrip()
-	local drip = Instance.new("Frame", container)
+	local drip = Instance.new("Frame")
 	drip.Size = UDim2.new(0, math.random(3, 6), 0, math.random(10, 25))
 	drip.Position = UDim2.new(math.random(), 0, 0, -10)
 	drip.BackgroundColor3 = Color3.fromRGB(255, 60, 0)
 	drip.BorderSizePixel = 0
 	drip.ZIndex = 3
+	drip.Parent = container
+
 	local tween = TweenService:Create(drip, TweenInfo.new(1), {
 		Position = UDim2.new(drip.Position.X.Scale, 0, 1, 10),
 		BackgroundTransparency = 1
@@ -35,6 +40,7 @@ local function createDrip()
 	tween.Completed:Connect(function() drip:Destroy() end)
 end
 
+-- 🌋 Lava Dripping Loop
 task.spawn(function()
 	while true do
 		createDrip()
@@ -42,14 +48,16 @@ task.spawn(function()
 	end
 end)
 
--- 🔥 Ambient Lava Glow
-local haze = Instance.new("Frame", container)
+-- 🔥 Ambient Lava Glow Overlay
+local haze = Instance.new("Frame")
 haze.Size = UDim2.new(1, 0, 1, 0)
 haze.BackgroundColor3 = Color3.fromRGB(255, 100, 50)
 haze.BackgroundTransparency = 0.9
 haze.BorderSizePixel = 0
 haze.ZIndex = 1
+haze.Parent = container
 
+-- 🔥 Glow Pulsing Loop
 task.spawn(function()
 	while true do
 		TweenService:Create(haze, TweenInfo.new(2), {BackgroundTransparency = 0.95}):Play()
@@ -58,27 +66,20 @@ task.spawn(function()
 		wait(2)
 	end
 end)
--- 🔘 Title
-local title = Instance.new("TextLabel", container)
+
+-- 🔘 Main Title
+local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "Amazero X — SWIFT Loader"
+title.Text = "Amazero — SWIFT Loader"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
 title.ZIndex = 5
+title.Parent = container
 
--- 📜 Script Button Panel
-local List = Instance.new("ScrollingFrame", container)
-List.Size = UDim2.new(1, 0, 1, -30)
-List.Position = UDim2.new(0, 0, 0, 30)
-List.CanvasSize = UDim2.new(0, 0, 0, 0)
-List.ScrollBarThickness = 6
-List.BackgroundTransparency = 1
-List.ZIndex = 5
-
--- 🔣 Hieroglyph display label
-local glyphLabel = Instance.new("TextLabel", container)
+-- 🔣 Ritualistic Glyph Label (Animated)
+local glyphLabel = Instance.new("TextLabel")
 glyphLabel.Size = UDim2.new(1, 0, 0, 40)
 glyphLabel.Position = UDim2.new(0, 0, 0, 5)
 glyphLabel.BackgroundTransparency = 1
@@ -90,13 +91,15 @@ glyphLabel.TextStrokeTransparency = 0.3
 glyphLabel.TextStrokeColor3 = Color3.fromRGB(255, 30, 10)
 glyphLabel.TextTransparency = 0
 glyphLabel.Text = "𐌰𐌼𐌀_𐌶𐌴𐍂𐍉"
-
+glyphLabel.Parent = container
+-- 🔁 Ritual Glyph Animation Cycle
 task.spawn(function()
+	local glyphs = {"𐌰𐌼𐌀", "𐌶𐌴𐍂𐍉", "𐍀𐍉𐌲𐌰", "𐌷𐌰𐌼𐌰", "𐌴𐌽𐌳"}
 	while true do
 		wait(5)
-		local glyphs = {"𐌰𐌼𐌀", "𐌶𐌴𐍂𐍉", "𐍀𐍉𐌲𐌰", "𐌷𐌰𐌼𐌰", "𐌴𐌽𐌳"}
+
 		glyphLabel.Text = glyphs[math.random(1, #glyphs)]
-		
+
 		local flashIn = TweenService:Create(glyphLabel, TweenInfo.new(0.2), {
 			TextTransparency = 0,
 			TextSize = 36
@@ -106,6 +109,8 @@ task.spawn(function()
 
 		task.spawn(function() shakeFrame(container, 0.4, 2) end)
 		task.spawn(function() shakeFrame(glyphLabel, 0.4, 1) end)
+
+		triggerAmazeroFlash() -- 🔴 Ritual flash call
 
 		wait(0.3)
 
@@ -117,6 +122,63 @@ task.spawn(function()
 	end
 end)
 
+-- 🌀 Shake utility
+function shakeFrame(frame, duration, intensity)
+	local originalPos = frame.Position
+	local t = 0
+	while t < duration do
+		local offsetX = math.random(-intensity, intensity)
+		local offsetY = math.random(-intensity, intensity)
+		frame.Position = originalPos + UDim2.new(0, offsetX, 0, offsetY)
+		task.wait(0.03)
+		t = t + 0.03
+	end
+	frame.Position = originalPos
+end
+
+-- 🔺 AMAZERO Ritual Flash
+function triggerAmazeroFlash()
+	local flash = Instance.new("TextLabel")
+	flash.AnchorPoint = Vector2.new(0.5, 0.5)
+	flash.Position = UDim2.new(0.5, 0, 1, -20)
+	flash.Size = UDim2.new(0, 200, 0, 30)
+	flash.Text = "𐌰𐌼𐌀𐌶𐌴𐍂𐍉"
+	flash.BackgroundTransparency = 1
+	flash.TextColor3 = Color3.fromRGB(255, 50, 0)
+	flash.Font = Enum.Font.GothamBlack
+	flash.TextSize = 24
+	flash.ZIndex = 99
+	flash.TextStrokeTransparency = 0.3
+	flash.TextStrokeColor3 = Color3.fromRGB(255, 10, 0)
+	flash.Parent = container
+
+	local gradient = Instance.new("UIGradient", flash)
+	gradient.Color = ColorSequence.new{
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 60, 0)),
+		ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 180, 80)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 60, 0))
+	}
+
+	local fadeIn = TweenService:Create(flash, TweenInfo.new(0.2), {TextTransparency = 0})
+	local fadeOut = TweenService:Create(flash, TweenInfo.new(0.3), {TextTransparency = 1})
+
+	fadeIn:Play()
+	fadeIn.Completed:Wait()
+	wait(0.3)
+	fadeOut:Play()
+	Debris:AddItem(flash, 1)
+end
+
+-- 📜 Script Button Panel
+local List = Instance.new("ScrollingFrame")
+List.Size = UDim2.new(1, 0, 1, -30)
+List.Position = UDim2.new(0, 0, 0, 30)
+List.CanvasSize = UDim2.new(0, 0, 0, 0)
+List.ScrollBarThickness = 6
+List.BackgroundTransparency = 1
+List.ZIndex = 5
+List.Parent = container
+
 local Layout = Instance.new("UIListLayout", List)
 Layout.Padding = UDim.new(0, 4)
 Layout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -125,6 +187,7 @@ List.ChildAdded:Connect(function()
 	task.wait()
 	List.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
 end)
+
 -- 📎 Script Button Generator
 local function createScriptButton(name, scriptUrl, optionalParam)
 	local button = Instance.new("TextButton", List)
@@ -157,8 +220,7 @@ local function createScriptButton(name, scriptUrl, optionalParam)
 		end
 	end)
 end
-
--- 🧨 Eruption Burst
+-- 🧨 Lava Eruption Burst
 local function eruption()
 	local burst = Instance.new("Frame", container)
 	burst.Size = UDim2.new(0, math.random(50, 120), 0, math.random(20, 60))
@@ -183,60 +245,19 @@ task.spawn(function()
 	end
 end)
 
--- 🌀 Shake utility
-local function shakeFrame(frame, duration, intensity)
-	local originalPos = frame.Position
-	local t = 0
-	while t < duration do
-		local offsetX = math.random(-intensity, intensity)
-		local offsetY = math.random(-intensity, intensity)
-		frame.Position = originalPos + UDim2.new(0, offsetX, 0, offsetY)
-		task.wait(0.03)
-		t = t + 0.03
-	end
-	frame.Position = originalPos
-end
-
--- 🔁 Every 5 seconds, trigger flash + shake
-task.spawn(function()
-	while true do
-		wait(5)
-
-		local flashIn = TweenService:Create(glyphLabel, TweenInfo.new(0.25), {
-			TextTransparency = 0
-		})
-		flashIn:Play()
-		flashIn.Completed:Wait()
-
-		task.spawn(function() shakeFrame(container, 0.4, 2) end)
-		task.spawn(function() shakeFrame(glyphLabel, 0.4, 1) end)
-
-		wait(0.4)
-		local flashOut = TweenService:Create(glyphLabel, TweenInfo.new(0.25), {
-			TextTransparency = 1
-		})
-		flashOut:Play()
-	end
-end)
-
--- ➕ Script Buttons
-createScriptButton("Redhub", "https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau", _G.Settings or {})
-createScriptButton("Hohohub", "https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI")
-createScriptButton("Zenith Hub", "https://raw.githubusercontent.com/Efe0626/ZenithHub/refs/heads/main/Loader")
-
--- ⏬ Minimize Toggle
+-- ⏬ Minimize Toggle Button
 local minimized = false
-local button = Instance.new("TextButton", container)
-button.Size = UDim2.new(0, 40, 0, 20)
-button.Position = UDim2.new(1, -45, 0, 5)
-button.Text = "-"
-button.TextSize = 18
-button.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
-button.TextColor3 = Color3.new(1, 1, 1)
-button.BorderSizePixel = 0
-button.ZIndex = 6
+local minimizeButton = Instance.new("TextButton", container)
+minimizeButton.Size = UDim2.new(0, 40, 0, 20)
+minimizeButton.Position = UDim2.new(1, -45, 0, 5)
+minimizeButton.Text = "-"
+minimizeButton.TextSize = 18
+minimizeButton.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
+minimizeButton.TextColor3 = Color3.new(1, 1, 1)
+minimizeButton.BorderSizePixel = 0
+minimizeButton.ZIndex = 6
 
-button.MouseButton1Click:Connect(function()
+minimizeButton.MouseButton1Click:Connect(function()
 	minimized = not minimized
 	if minimized then
 		container:TweenSize(UDim2.new(0, 80, 0, 40), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
@@ -251,3 +272,8 @@ button.MouseButton1Click:Connect(function()
 		title.Visible = true
 	end
 end)
+
+-- ➕ Initialize Script Buttons
+createScriptButton("Redhub", "https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau", _G.Settings or {})
+createScriptButton("Hohohub", "https://raw.githubusercontent.com/acsu123/HOHO_H/main/Loading_UI")
+createScriptButton("Zenith Hub", "https://raw.githubusercontent.com/Efe0626/ZenithHub/refs/heads/main/Loader")
