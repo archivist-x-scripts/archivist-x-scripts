@@ -1,4 +1,4 @@
--- 🔥 ArchivistX_SWIFT with Volcanic UI Theme
+-- 🔥 AmazeroX_SWIFT with Volcanic UI Theme
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -6,7 +6,7 @@ local TweenService = game:GetService("TweenService")
 local localPlayer = Players.LocalPlayer
 
 local gui = Instance.new("ScreenGui", CoreGui)
-gui.Name = "ArchivistX_LavaFusion"
+gui.Name = "AmazeroX_LavaFusion"
 gui.ResetOnSpawn = false
 
 -- 🔲 Container with lava theme
@@ -58,11 +58,10 @@ task.spawn(function()
 		wait(2)
 	end
 end)
-
 -- 🔘 Title
 local title = Instance.new("TextLabel", container)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "Archivist X — SWIFT Loader"
+title.Text = "Amazero X — SWIFT Loader"
 title.BackgroundTransparency = 1
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
@@ -77,6 +76,7 @@ List.CanvasSize = UDim2.new(0, 0, 0, 0)
 List.ScrollBarThickness = 6
 List.BackgroundTransparency = 1
 List.ZIndex = 5
+
 -- 🔣 Hieroglyph display label
 local glyphLabel = Instance.new("TextLabel", container)
 glyphLabel.Size = UDim2.new(1, 0, 0, 40)
@@ -90,15 +90,13 @@ glyphLabel.TextStrokeTransparency = 0.3
 glyphLabel.TextStrokeColor3 = Color3.fromRGB(255, 30, 10)
 glyphLabel.TextTransparency = 0
 glyphLabel.Text = "𐌰𐌼𐌀_𐌶𐌴𐍂𐍉"
+
 task.spawn(function()
 	while true do
 		wait(5)
-
-		-- Optional: Change glyph text each cycle
 		local glyphs = {"𐌰𐌼𐌀", "𐌶𐌴𐍂𐍉", "𐍀𐍉𐌲𐌰", "𐌷𐌰𐌼𐌰", "𐌴𐌽𐌳"}
 		glyphLabel.Text = glyphs[math.random(1, #glyphs)]
-
-		-- Flash in
+		
 		local flashIn = TweenService:Create(glyphLabel, TweenInfo.new(0.2), {
 			TextTransparency = 0,
 			TextSize = 36
@@ -106,13 +104,11 @@ task.spawn(function()
 		flashIn:Play()
 		flashIn.Completed:Wait()
 
-		-- Shake and pulse
 		task.spawn(function() shakeFrame(container, 0.4, 2) end)
 		task.spawn(function() shakeFrame(glyphLabel, 0.4, 1) end)
 
 		wait(0.3)
 
-		-- Flash out
 		local flashOut = TweenService:Create(glyphLabel, TweenInfo.new(0.2), {
 			TextTransparency = 1,
 			TextSize = 28
@@ -129,7 +125,6 @@ List.ChildAdded:Connect(function()
 	task.wait()
 	List.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
 end)
-
 -- 📎 Script Button Generator
 local function createScriptButton(name, scriptUrl, optionalParam)
 	local button = Instance.new("TextButton", List)
@@ -187,6 +182,7 @@ task.spawn(function()
 		eruption()
 	end
 end)
+
 -- 🌀 Shake utility
 local function shakeFrame(frame, duration, intensity)
 	local originalPos = frame.Position
