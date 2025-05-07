@@ -62,6 +62,47 @@ crackFolder.Name = "CrackFolder"
 local pulseCount = 0
 local maxCracks = 5
 local pulseCracks = {}
+-- === GLOWING CRACK BUILDUP SYSTEM ===
+local function spawnPersistentCrack()
+	if pulseCount >= maxCracks or not visualEffectsEnabled then return end
+
+	local crack = Instance.new("Frame", crackFolder)
+	crack.Size = UDim2.new(0, math.random(40, 80), 0, math.random(2, 4))
+	crack.Position = UDim2.new(math.random(), -40, math.random(), 0)
+	crack.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+	crack.BackgroundTransparency = 0.2
+	crack.BorderSizePixel = 0
+	crack.Rotation = math.random(-25, 25)
+	crack.ZIndex = 2
+
+	table.insert(pulseCracks, crack)
+	pulseCount += 1
+end
+
+-- Crack buildup loop (One-time setup, then infinite shimmer)
+task.spawn(function()
+	while pulseCount < maxCracks do
+		wait(1.5)
+		if visualEffectsEnabled then spawnPersistentCrack() end
+	end
+
+	-- Begin glowing effect once 5 cracks are present
+	for _, crack in ipairs(pulseCracks) do
+		task.spawn(function()
+			while true do
+				if not visualEffectsEnabled then crack.Visible = false wait(1) continue end
+				crack.Visible = true
+				local flicker = Color3.fromRGB(255, math.random(40, 80), 0)
+				TweenService:Create(crack, TweenInfo.new(0.4), {
+					BackgroundColor3 = flicker,
+					BackgroundTransparency = 0.1 + math.random() * 0.3
+				}):Play()
+				wait(0.6)
+			end
+		end)
+	end
+end)
+
 
 -- Function: Create Dripping Lava
 local function createDrip()
@@ -285,8 +326,42 @@ button.MouseButton1Click:Connect(function()
 
 	if minimized then
 		container:TweenSize(UDim2.new(0, 80, 0, 40), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+
+		-- Fade & destroy existing cracks
+		for _, crack in ipairs(pulseCracks) do
+			if crack and crack:IsA("Frame") then
+				TweenService:Create(crack, TweenInfo.new(0.5), {
+					BackgroundTransparency = 1
+				}):Play()
+				game.Debris:AddItem(crack, 0.6)
+			end
+		end
+		table.clear(pulseCracks)
+		pulseCount = 0
 	else
 		container:TweenSize(UDim2.new(0, 300, 0, 400), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
+
+		-- Restart crack buildup loop
+		task.spawn(function()
+			while pulseCount < maxCracks do
+				wait(1.5)
+				if visualEffectsEnabled then spawnPersistentCrack() end
+			end
+
+			-- Glow again
+			for _, crack in ipairs(pulseCracks) do
+				task.spawn(function()
+					while visualEffectsEnabled do
+						local flicker = Color3.fromRGB(255, math.random(40, 80), 0)
+						TweenService:Create(crack, TweenInfo.new(0.4), {
+							BackgroundColor3 = flicker,
+							BackgroundTransparency = 0.1 + math.random() * 0.3
+						}):Play()
+						wait(0.6)
+					end
+				end)
+			end
+		end)
 	end
 end)
 
