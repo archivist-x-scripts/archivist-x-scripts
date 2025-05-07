@@ -434,9 +434,17 @@ end)
 		if success then
 			local exec, err = pcall(function()
 				if optionalParam then
-					loadstring(result)(optionalParam)
-				else
-					loadstring(result)()
+					local func = loadstring(result)
+if func then
+	if optionalParam then
+		pcall(func, optionalParam)
+	else
+		pcall(func)
+	end
+else
+	warn("Loadstring failed for: " .. name)
+end
+
 				end
 			end)
 			if not exec then
