@@ -142,6 +142,40 @@ for i = 1, 3 do
 		end
 	end)
 end
+local function createCrack()
+	if not visualEffectsEnabled then return end
+	local crack = Instance.new("Frame", crackFolder)
+	crack.Size = UDim2.new(0, math.random(40, 80), 0, math.random(2, 4))
+	crack.Position = UDim2.new(math.random(), -40, math.random(), 0)
+	crack.BackgroundColor3 = Color3.fromRGB(255, 80, 0)
+	crack.BackgroundTransparency = 0.5
+	crack.BorderSizePixel = 0
+	crack.Rotation = math.random(-30, 30)
+	crack.ZIndex = 2
+
+	local glow = Instance.new("UIGradient", crack)
+	glow.Color = ColorSequence.new{
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 0)),
+		ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 0)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 50, 0))
+	}
+	glow.Rotation = math.random(0, 360)
+
+	TweenService:Create(crack, TweenInfo.new(2), {
+		BackgroundTransparency = 1
+	}):Play()
+	game.Debris:AddItem(crack, 2)
+end
+
+-- Crack loop
+task.spawn(function()
+	while true do
+		wait(1)
+		if visualEffectsEnabled then
+			createCrack()
+		end
+	end
+end)
 
 -- Pulse & Sigils
 local sigilAssets = {
@@ -253,7 +287,29 @@ local function createScriptButton(name, scriptUrl, optionalParam)
 	local button = Instance.new("TextButton", list)
 	button.Size = UDim2.new(1, -10, 0, 30)
 	button.Position = UDim2.new(0, 5, 0, 0)
-	button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+button.BackgroundTransparency = 1
+local bg = Instance.new("Frame", button)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.Position = UDim2.new(0, 0, 0, 0)
+bg.BackgroundTransparency = 0
+bg.BorderSizePixel = 0
+bg.ZIndex = button.ZIndex - 1
+
+local grad = Instance.new("UIGradient", bg)
+grad.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 60, 0)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 140, 0)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 60, 0))
+}
+grad.Rotation = math.random(0, 360)
+
+-- Animate gradient rotation
+task.spawn(function()
+	while true do
+		grad.Rotation = (grad.Rotation + 1) % 360
+		wait(0.05)
+	end
+end)
 	button.TextColor3 = Color3.fromRGB(255, 255, 255)
 	button.Font = Enum.Font.Gotham
 	button.TextSize = 14
